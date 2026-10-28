@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sussurros & Versos — Literatura Brasileira 📜</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        body {
+            background: #fdfbf7;
+            color: #2c2c2c;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+            overflow-x: hidden;
+        }
+
+        /* Animação de Folhas/Pétalas ao Fundo */
+        .leaf-bg {
+            position: fixed;
+            font-size: 20px;
+            opacity: 0.4;
+            animation: float 8s infinite linear;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Container Principal estilo Livro Antiquário */
+        .app-container {
+            background: #fffdf9;
+            border: 1px solid #e2d9cc;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 650px;
+            padding: 35px 25px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Menu de Navegação */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #efe6d5;
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #c8bca8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #5a4e3e;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: #8b263e;
+            color: #ffffff;
+            border-color: #8b263e;
+        }
+
+        /* Páginas */
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            color: #8b263e;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: normal;
+        }
+
+        h1 { font-size: 28px; letter-spacing: 1px; }
+        h2 { font-size: 22px; }
+
+        p {
+            line-height: 1.7;
+            color: #4a4238;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Cartão de Poema */
+        .poem-card {
+            background: #faf6ee;
+            border-left: 4px solid #8b263e;
+            padding: 20px 25px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        .poem-text {
+            font-style: italic;
+            white-space: pre-line;
+            font-size: 16px;
+            color: #2c2c2c;
+            line-height: 1.8;
+        }
+
+        .poem-author {
+            margin-top: 15px;
+            text-align: right;
+            font-weight: bold;
+            color: #8b263e;
+            font-size: 14px;
+        }
+
+        /* Seleção de Autores */
+        .author-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .author-btn {
+            background: #f5efe6;
+            border: 1px solid #dcd1c0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #3d332a;
+            transition: all 0.2s;
+        }
+
+        .author-btn:hover {
+            background: #ebdcc9;
+            border-color: #8b263e;
+        }
+
+        /* Botão Ação Padrão */
+        .action-btn {
+            display: block;
+            margin: 20px auto 0;
+            background: #8b263e;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #6b1d2f;
+        }
+
+        /* Quiz de Sentimento */
+        .mood-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .mood-btn {
+            background: #f0e6d6;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #4a4238;
+            transition: all 0.3s;
+        }
+
+        .mood-btn:hover {
+            background: #d8c4a9;
+        }
+
+        /* Jogo do Soneto Embaralhado */
+        .verse-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .verse-item {
+            background: #faf6ee;
+            border: 1px dashed #c8bca8;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-style: italic;
+            transition: all 0.2s;
+        }
+
+        .verse-item:hover {
+            border-color: #8b263e;
+            background: #fff;
+        }
+
+        .verse-item.selected {
+            background: #8b263e;
+            color: white;
+            border-style: solid;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="leaf-container"></div>
+
+    <div class="app-container">
+        <!-- Navegação pelas Salas -->
+        <nav>
+            <button class="nav-btn active" onclick="switchPage(0)">Início 📖</button>
+            <button class="nav-btn" onclick="switchPage(1)">Autores ✍️</button>
+            <button class="nav-btn" onclick="switchPage(2)">Qual seu Humor? 🌹</button>
+            <button class="nav-btn" onclick="switchPage(3)">Jogo do Soneto 🧩</button>
+        </nav>
+
+        <!-- PÁGINA 1: Início -->
+        <div class="page active" id="page-0">
+            <h1>Sussurros & Versos</h1>
+            <p>Uma experiência dedicada à riqueza poética da nossa Literatura Brasileira.</p>
+
+            <div class="poem-card" id="daily-poem">
+                <div class="poem-text" id="daily-text">"De tudo, ao meu amor serei atento
+Antes, e com tal zelo, e sempre, e tanto
+Que mesmo em face do maior encanto
+De dele se encante meu pensamento."</div>
+                <div class="poem-author" id="daily-author">— Vinicius de Moraes</div>
+            </div>
+
+            <button class="action-btn" onclick="generateRandomVerse()">Sortear Outro Verso ✨</button>
+        </div>
+
+        <!-- PÁGINA 2: Acervo de Autores -->
+        <div class="page" id="page-1">
+            <h2>Grandes Mestres ✒️</h2>
+            <p>Escolha um autor para ler uma de suas obras mais marcantes:</p>
+
+            <div class="author-selector">
+                <button class="author-btn" onclick="showAuthorPoem('vinicius')">Vinicius de Moraes</button>
+                <button class="author-btn" onclick="showAuthorPoem('drummond')">Carlos Drummond</button>
+                <button class="author-btn" onclick="showAuthorPoem('clarice')">Clarice Lispector</button>
+                <button class="author-btn" onclick="showAuthorPoem('cecilia')">Cecília Meireles</button>
+            </div>
+
+            <div class="poem-card" id="author-poem-card" style="display: none;">
+                <div class="poem-text" id="author-text"></div>
+                <div class="poem-author" id="author-name"></div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 3: Recomendação por Sentimento -->
+        <div class="page" id="page-2">
+            <h2>O Que Seu Coração Pede Hoje? 💭</h2>
+            <p>Selecione seu sentimento atual para receber um poema sob medida:</p>
+
+            <div class="mood-container">
+                <button class="mood-btn" onclick="recommendByMood('amor')">❤️ Apaixonado(a)</button>
+                <button class="mood-btn" onclick="recommendByMood('nostalgia')">🍂 Nostálgico(a)</button>
+                <button class="mood-btn" onclick="recommendByMood('reflexao')">🌌 Reflexivo(a)</button>
+                <button class="mood-btn" onclick="recommendByMood('esperanca')">🌱 Esperançoso(a)</button>
+            </div>
+
+            <div class="poem-card" id="mood-poem-card" style="display: none;">
+                <div class="poem-text" id="mood-text"></div>
+                <div class="poem-author" id="mood-author"></div>
+            </div>
+        </div>
+
+        <!-- PÁGINA 4: Jogo do Soneto Embaralhado -->
+        <div class="page" id="page-3">
+            <h2>Desafio Poético 🧩</h2>
+            <p>Abaixo estão os versos embaralhados da famosa estrofe de <b>Vinicius de Moraes</b>. Clique neles na ordem correta para reconstruir o poema!</p>
+
+            <div class="verse-list" id="verse-list"></div>
+
+            <p id="game-feedback" style="font-weight: bold; color: #8b263e; margin-top: 15px; display: none;"></p>
+            <button class="action-btn" id="reset-game-btn" style="display: none;" onclick="initSonnetGame()">Tentar Novamente 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // Banco de Dados Poético
+        const poems = [
+            {
+                text: "Eu possa me dizer do amor (que tive):\nQue não seja imortal, posto que é chama\nMas que seja infinito enquanto dure.",
+                author: "Vinicius de Moraes (Soneto de Fidelidade)"
+            },
+            {
+                text: "No meio do caminho tinha uma pedra\nTinha uma pedra no meio do caminho\nTinha uma pedra\nNunca me esquecerei deste acontecimento...",
+                author: "Carlos Drummond de Andrade"
+            },
+            {
+                text: "Renda-se, como eu me rendi.\nAproxime-se, como eu me aproximei.\nViva o que tem para ser vivido...",
+                author: "Clarice Lispector"
+            },
+            {
+                text: "Eu canto porque o instante existe\ne a minha vida está completa.\nNão sou alegre nem sou triste:\nsou poeta.",
+                author: "Cecília Meireles (Motivo)"
+            }
+        ];
+
+        const authorPoems = {
+            vinicius: {
+                text: "Pela luz dos olhos teus\nEu tenho a certeza de que a minha vida\nFoi feita para ser vivida ao lado da tua\nPela luz dos olhos teus...",
+                author: "— Vinicius de Moraes"
+            },
+            drummond: {
+                text: "Mundo mundo vasto mundo,\nse eu me chamasse Raimundo\nseria uma rima, não seria uma solução.\nMundo mundo vasto mundo,\nmais vasto é meu coração.",
+                author: "— Carlos Drummond de Andrade"
+            },
+            clarice: {
+                text: "Liberdade é pouco. O que eu desejo ainda não tem nome.\nSuporta-te a ti mesmo, pois tu és a tua única morada.",
+                author: "— Clarice Lispector"
+            },
+            cecilia: {
+                text: "Ou isto ou aquilo: ou isto ou aquilo...\ne quem escolhe um não escolhe outro,\nquem vai para o ar não fica na terra,\nquem fica na terra não vai para o ar.",
+                author: "— Cecília Meireles"
+            }
+        };
+
+        const moodPoems = {
+            amor: {
+                text: "Ainda que eu falasse as línguas dos homens e dos anjos, sem amor eu nada seria.\nO amor é paciente, é benigno; o amor não arde em ciúmes.",
+                author: "— Renato Russo / Camões"
+            },
+            nostalgia: {
+                text: "Minha terra tem palmeiras,\nOnde canta o Sabiá;\nAs aves, que aqui gorjeiam,\nNão gorjeiam como lá.",
+                author: "— Gonçalves Dias (Canção do Exílio)"
+            },
+            reflexao: {
+                text: "Tenho apenas duas mãos\ne o sentimento do mundo,\nmas estou cheio de escravos,\nmeu corpo estremece e a gota de orvalho...",
+                author: "— Carlos Drummond de Andrade"
+            },
+            esperanca: {
+                text: "Sejamos simples e calmos,\ncomo os regatos e as árvores,\ne Deus nos amará fazendo-nos\nbelos como as árvores e os regatos...",
+                author: "— Fernando Pessoa (Heterônimo Alberto Caeiro)"
+            }
+        };
+
+        // Navegação entre páginas
+        function switchPage(pageIndex) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById(`page-${pageIndex}`).classList.add('active');
+            document.querySelectorAll('.nav-btn')[pageIndex].classList.add('active');
+
+            if (pageIndex === 3) {
+                initSonnetGame();
+            }
+        }
+
+        // Gerar Verso Aleatório
+        function generateRandomVerse() {
+            const randomIndex = Math.floor(Math.random() * poems.length);
+            const selected = poems[randomIndex];
+            
+            document.getElementById('daily-text').innerText = `"${selected.text}"`;
+            document.getElementById('daily-author').innerText = `— ${selected.author}`;
+        }
+
+        // Mostrar Poema do Autor Escolhido
+        function showAuthorPoem(authorKey) {
+            const poem = authorPoems[authorKey];
+            const card = document.getElementById('author-poem-card');
+            
+            document.getElementById('author-text').innerText = poem.text;
+            document.getElementById('author-name').innerText = poem.author;
+            card.style.display = 'block';
+        }
+
+        // Recomendar Poema por Humor
+        function recommendByMood(moodKey) {
+            const poem = moodPoems[moodKey];
+            const card = document.getElementById('mood-poem-card');
+
+            document.getElementById('mood-text').innerText = poem.text;
+            document.getElementById('mood-author').innerText = poem.author;
+            card.style.display = 'block';
+        }
+
+        /* --- JOGO DO SONETO --- */
+        const correctOrder = [
+            "De tudo, ao meu amor serei atento",
+            "Antes, e com tal zelo, e sempre, e tanto",
+            "Que mesmo em face do maior encanto",
+            "De dele se encante meu pensamento."
+        ];
+
+        let userSelection = [];
+
+        function initSonnetGame() {
+            userSelection = [];
+            const listContainer = document.getElementById('verse-list');
+            const feedback = document.getElementById('game-feedback');
+            const resetBtn = document.getElementById('reset-game-btn');
+
+            feedback.style.display = 'none';
+            resetBtn.style.display = 'none';
+            listContainer.innerHTML = '';
+
+            // Embaralhar versos
+            const shuffled = [...correctOrder].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach((verse) => {
+                const item = document.createElement('div');
+                item.classList.add('verse-item');
+                item.innerText = verse;
+                item.onclick = () => selectVerse(item, verse);
+                listContainer.appendChild(item);
+            });
+        }
+
+        function selectVerse(element, verse) {
+            if (element.classList.contains('selected')) return;
+
+            element.classList.add('selected');
+            userSelection.push(verse);
+
+            // Quando selecionar todos os 4 versos, verifica
+            if (userSelection.length === correctOrder.length) {
+                checkSonnetOrder();
+            }
+        }
+
+        function checkSonnetOrder() {
+            const feedback = document.getElementById('game-feedback');
+            const resetBtn = document.getElementById('reset-game-btn');
+            
+            const isCorrect = userSelection.every((val, index) => val === correctOrder[index]);
+
+            feedback.style.display = 'block';
+            resetBtn.style.display = 'inline-block';
+
+            if (isCorrect) {
+                feedback.innerText = "Perfeito! Você reconstruiu a estrofe de Vinicius de Moraes com maestria! 🌹✨";
+                feedback.style.color = "#2e7d32";
+            } else {
+                feedback.innerText = "Ops! A ordem não ficou exata. Tente organizar novamente!";
+                feedback.style.color = "#8b263e";
+            }
+        }
+
+        // Criador de pétalas caindo ao fundo
+        function createLeaf() {
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf-bg');
+            leaf.innerText = ['🍂', '🌸', '🍃', '🌹'][Math.floor(Math.random() * 4)];
+            leaf.style.left = Math.random() * 100 + 'vw';
+            leaf.style.animationDuration = Math.random() * 4 + 4 + 's';
+            
+            document.getElementById('leaf-container').appendChild(leaf);
+            setTimeout(() => leaf.remove(), 8000);
+        }
+
+        setInterval(createLeaf, 700);
+    </script>
+</body>
+</html>
